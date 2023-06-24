@@ -1,24 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceLocations;
-using Zenject;
 
 namespace Gallery.Source.AssetManagement
 {
     public class AssetProvider : IAssetProvider
     {
-        private readonly IInstantiator _instantiator;
-
         private readonly Dictionary<string, AsyncOperationHandle> _assetHandles = new();
-
-        public AssetProvider(IInstantiator instantiator)
-        {
-            _instantiator = instantiator;
-        }
 
         public async Task<T> LoadAssetAsync<T>(string assetName) where T : class
         {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Gallery.Source.Data;
 using Gallery.Source.Extensions;
@@ -9,6 +10,8 @@ namespace Gallery.Source.NetworkManagement
     public class ImageDownloader : IImageDownloader
     {
         private readonly IConfigsProvider _configsProvider;
+        
+        private readonly Dictionary<string, Texture2D> _cachedTextures = new();
 
         public ImageDownloader(IConfigsProvider configsProvider)
         {
@@ -17,6 +20,9 @@ namespace Gallery.Source.NetworkManagement
 
         public async Task<Texture2D> Load(string imageName)
         {
+            if (_cachedTextures.ContainsKey(imageName))
+                return _cachedTextures[imageName];
+
             var fullPath = $"{_configsProvider.GalleryConfig.PathForDownload}{imageName}.jpg";
             using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(fullPath);
 
@@ -30,7 +36,8 @@ namespace Gallery.Source.NetworkManagement
             }
 
             var handler = webRequest.downloadHandler as DownloadHandlerTexture;
-
+            _cachedTextures[imageName] = handler.texture;
+            
             return handler.texture;
         }
     }
